@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 
 // 创建 Axios 实例 - 直接连接 FastAPI 后端
 const request: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: 'http://localhost:8001/api/v1',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'

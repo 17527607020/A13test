@@ -1,18 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import user, student
+from app.api.v1 import user, student, job_graph
+from app.api.v1 import user_center as user_center_router
 from app.core.config import settings
 
 app = FastAPI(
     title="CareerPlannerAPI",
     description="职业规划智能体后端API服务",
-    version="1.0.0"
+    version="1.0.1"
 )
 
 # CORS 配置 - 允许前端跨域访问
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 开发环境允许所有来源
+    allow_origin_regex=".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,6 +22,8 @@ app.add_middleware(
 # 注册路由
 app.include_router(user.router, prefix=settings.API_V1_STR, tags=["user"])
 app.include_router(student.router, prefix=settings.API_V1_STR, tags=["student"])
+app.include_router(job_graph.router, prefix=settings.API_V1_STR, tags=["job_graph"])
+app.include_router(user_center_router.router, prefix=settings.API_V1_STR, tags=["user_center"])
 
 
 @app.get("/health")

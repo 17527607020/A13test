@@ -17,11 +17,25 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/jobs',
     name: 'JobExplore',
-    component: () => import('@/views/JobExplore.vue'),
-    meta: { title: '岗位探索', requiresAuth: true }
+    redirect: '/jobs/list',
+    meta: { title: '岗位探索', requiresAuth: true },
+    children: [
+      {
+        path: 'list',
+        name: 'JobList',
+        component: () => import('@/views/JobList.vue'),
+        meta: { title: '岗位列表', requiresAuth: true }
+      },
+      {
+        path: 'graph',
+        name: 'JobGraph',
+        component: () => import('@/views/JobGraph.vue'),
+        meta: { title: '岗位图谱', requiresAuth: true }
+      }
+    ]
   },
   {
-    path: '/profile',
+    path: '/student-profile',
     name: 'StudentProfile',
     component: () => import('@/views/StudentProfile.vue'),
     meta: { title: '学生画像', requiresAuth: true }
@@ -57,16 +71,13 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫
 router.beforeEach((to, from, next) => {
-  // 从 localStorage 获取认证状态
   const authStorage = localStorage.getItem('auth-storage')
   let isAuthenticated = false
 
   if (authStorage) {
     try {
       const authData = JSON.parse(authStorage)
-      // 检查 user 和 token 是否存在（而不是 isAuthenticated 计算属性）
       const user = authData?.user
       const token = authData?.token
       isAuthenticated = !!(user && token)
@@ -75,18 +86,15 @@ router.beforeEach((to, from, next) => {
     }
   }
 
-  // 设置页面标题
   if (to.meta.title) {
     document.title = `${to.meta.title} | 职业规划智能体`
   }
 
-  // 需要认证但未登录
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
     return
   }
 
-  // 已登录但访问登录页
   if (to.path === '/login' && isAuthenticated) {
     next('/')
     return
