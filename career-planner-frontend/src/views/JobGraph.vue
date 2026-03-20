@@ -4,20 +4,9 @@
 
     <el-card class="control-card">
       <div class="control-row">
-        <el-select
-          v-model="selectedJob"
-          placeholder="选择岗位查看图谱"
-          clearable
-          filterable
-          @change="handleJobChange"
-          class="job-select"
-        >
-          <el-option
-            v-for="job in jobsWithPaths"
-            :key="job.name"
-            :label="job.name"
-            :value="job.name"
-          >
+        <el-select v-model="selectedJob" placeholder="选择岗位查看图谱" clearable filterable @change="handleJobChange"
+          class="job-select">
+          <el-option v-for="job in jobsWithPaths" :key="job.name" :label="job.name" :value="job.name">
             <span>{{ job.name }}</span>
             <span class="job-info">
               (晋升: {{ job.promotion_count }}, 换岗: {{ job.transfer_count }})
@@ -224,7 +213,7 @@ const handleNodeClick = (params: any) => {
 const deduplicateTransferLinks = (links: JobLink[]): JobLink[] => {
   const transferPairs = new Set<string>()
   const result: JobLink[] = []
-  
+
   for (const link of links) {
     if (link.type === 'TRANSFERS_TO') {
       const pairKey = [link.source, link.target].sort().join('-')
@@ -236,7 +225,7 @@ const deduplicateTransferLinks = (links: JobLink[]): JobLink[] => {
       result.push(link)
     }
   }
-  
+
   return result
 }
 
@@ -244,7 +233,7 @@ const buildGraphOption = (nodes: JobNode[], links: JobLink[]): EChartsOption => 
   const chartNodes = nodes.map((node) => {
     const color = getNodeColor(node.name)
     const nameLength = node.name.length
-    
+
     let fontSize = 12
     if (nameLength <= 3) {
       fontSize = 14
@@ -255,7 +244,7 @@ const buildGraphOption = (nodes: JobNode[], links: JobLink[]): EChartsOption => 
     } else {
       fontSize = 9
     }
-    
+
     return {
       id: node.id,
       name: node.name,
@@ -278,7 +267,7 @@ const buildGraphOption = (nodes: JobNode[], links: JobLink[]): EChartsOption => 
   })
 
   const deduplicatedLinks = deduplicateTransferLinks(links)
-  
+
   const chartLinks = deduplicatedLinks.map(link => ({
     source: link.source,
     target: link.target,
@@ -346,11 +335,11 @@ const loadGraphData = async (useMockFirst: boolean = false) => {
       chart.setOption(option, true)
     }
   }
-  
+
   const filterMockData = () => {
     let filteredNodes = mockNodes
     let filteredLinks = mockLinks
-    
+
     if (selectedJob.value) {
       const selectedNode = mockNodes.find(n => n.name === selectedJob.value)
       if (selectedNode) {
@@ -362,12 +351,12 @@ const loadGraphData = async (useMockFirst: boolean = false) => {
             relatedNodeIds.add(link.source)
           }
         })
-        
+
         filteredNodes = mockNodes.filter(n => relatedNodeIds.has(n.id))
-        filteredLinks = mockLinks.filter(l => 
+        filteredLinks = mockLinks.filter(l =>
           relatedNodeIds.has(l.source) && relatedNodeIds.has(l.target)
         )
-        
+
         if (graphType.value === 'promotion') {
           filteredLinks = filteredLinks.filter(l => l.type === 'PROMOTES_TO')
         } else if (graphType.value === 'transfer') {
@@ -381,15 +370,16 @@ const loadGraphData = async (useMockFirst: boolean = false) => {
         filteredLinks = mockLinks.filter(l => l.type === 'TRANSFERS_TO')
       }
     }
-    
+
     return { nodes: filteredNodes, links: filteredLinks }
   }
-  
+
+  // 如果使用模拟数据优先，先显示模拟数据
   if (useMockFirst) {
     const mockData = filterMockData()
     showMockData(mockData.nodes, mockData.links)
   }
-  
+
   try {
     let data
     if (selectedJob.value) {
@@ -404,21 +394,31 @@ const loadGraphData = async (useMockFirst: boolean = false) => {
       data = await jobGraphApi.getFullGraph(undefined, graphType.value)
     }
 
+    // 只有当API返回有效数据时才更新图表
     if (chart && !chart.isDisposed() && data.nodes.length > 0) {
       const option = buildGraphOption(data.nodes, data.links)
       chart.setOption(option, true)
-    } else if (chart && !chart.isDisposed()) {
-      chart.clear()
-      chart.setOption({
-        title: {
-          text: '暂无图谱数据',
-          left: 'center',
-          top: 'center'
-        }
-      })
+    } else if (!useMockFirst) {
+      // 只有在没有使用模拟数据优先的情况下，才显示空数据提示
+      // 否则保留模拟数据
+      const mockData = filterMockData()
+      if (mockData.nodes.length > 0) {
+        showMockData(mockData.nodes, mockData.links)
+      } else if (chart && !chart.isDisposed()) {
+        chart.clear()
+        chart.setOption({
+          title: {
+            text: '暂无图谱数据',
+            left: 'center',
+            top: 'center'
+          }
+        })
+      }
     }
+    // 如果 useMockFirst 为 true 且 API 返回空数据，保留已显示的模拟数据，不做任何操作
   } catch (error) {
     console.error('加载图谱数据失败，使用模拟数据:', error)
+    // 发生错误时，显示模拟数据
     const mockData = filterMockData()
     showMockData(mockData.nodes, mockData.links)
   }
@@ -445,14 +445,14 @@ const handleResize = () => {
 onMounted(async () => {
   await nextTick()
   initChart()
-  
+
   try {
     jobsWithPaths.value = await jobGraphApi.getJobsWithPaths()
   } catch (error) {
     console.error('加载岗位列表失败，使用模拟数据:', error)
     jobsWithPaths.value = mockJobs
   }
-  
+
   await loadGraphData(true)
   window.addEventListener('resize', handleResize)
 })
@@ -501,7 +501,7 @@ onUnmounted(() => {
   width: 100%;
   height: 600px;
   cursor: grab;
-  
+
   &:active {
     cursor: grabbing;
   }

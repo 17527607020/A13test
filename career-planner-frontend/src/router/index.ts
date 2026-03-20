@@ -15,6 +15,30 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '首页', requiresAuth: true }
   },
   {
+    path: '/assessment',
+    name: 'CareerAssessment',
+    component: () => import('@/views/CareerAssessment.vue'),
+    meta: { title: '职业测评', requiresAuth: true }
+  },
+  {
+    path: '/interview',
+    name: 'MockInterview',
+    component: () => import('@/views/MockInterview.vue'),
+    meta: { title: '模拟面试', requiresAuth: true }
+  },
+  {
+    path: '/interview/session',
+    name: 'InterviewSession',
+    component: () => import('@/views/InterviewSession.vue'),
+    meta: { title: '面试进行中', requiresAuth: true }
+  },
+  {
+    path: '/interview/result/:id',
+    name: 'InterviewResult',
+    component: () => import('@/views/InterviewResult.vue'),
+    meta: { title: '面试结果', requiresAuth: true }
+  },
+  {
     path: '/jobs',
     name: 'JobExplore',
     redirect: '/jobs/list',

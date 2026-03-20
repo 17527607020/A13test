@@ -6,7 +6,7 @@ from typing import AsyncGenerator
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    SERVER_PORT: int = 8000
+    SERVER_PORT: int = 8001
     DATABASE_URL: str = "postgresql+asyncpg://postgres:123456@localhost:5432/career_planner"
     
     NEO4J_URI: str = "bolt://localhost:7687"

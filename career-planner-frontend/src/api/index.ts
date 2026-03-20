@@ -1,3 +1,6 @@
 export * from './user'
 export * from './studentProfile'
 export * from './jobGraph'
+export * from './assessment'
+export * from './interview'
+export * from './home'

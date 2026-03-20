@@ -10,6 +10,23 @@ from app.models.user import User
 router = APIRouter()
 
 
+async def get_current_user(
+    user_id: int = None,
+    db: AsyncSession = Depends(get_db)
+) -> User:
+    """
+    获取当前登录用户
+    简化版：通过user_id获取用户
+    """
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="未登录")
+
+    user = await get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="用户不存在")
+    return user
+
+
 @router.post("/login", response_model=AuthResponse)
 async def login(
     user_login: UserLogin,
