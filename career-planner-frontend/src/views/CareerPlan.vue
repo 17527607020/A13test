@@ -1,7 +1,18 @@
 <template>
   <div class="career-plan-page">
+    <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">职业规划</h1>
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <TrendCharts />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">职业规划</h1>
+          <p class="page-subtitle">制定个性化职业发展路径，实现职业目标</p>
+        </div>
+      </div>
       <div class="profile-info" v-if="studentProfile">
         当前画像：{{ studentProfile.name }} - {{ studentProfile.major }} ({{ studentProfile.education }})
       </div>
@@ -23,13 +34,8 @@
         </div>
 
         <div class="jobs-grid" v-if="jobs.length > 0">
-          <div
-            v-for="job in jobs"
-            :key="job.id"
-            class="job-option"
-            :class="{ selected: selectedJob?.id === job.id }"
-            @click="selectedJob = job"
-          >
+          <div v-for="job in jobs" :key="job.id" class="job-option" :class="{ selected: selectedJob?.id === job.id }"
+            @click="selectedJob = job">
             <h4 class="job-name">{{ job.name }}</h4>
             <div class="job-info">
               <p><span class="label">行业：</span>{{ job.industry }}</p>
@@ -52,7 +58,9 @@
       <!-- 学生画像摘要 -->
       <el-card class="profile-summary">
         <h3 class="summary-title">
-          <el-icon><User /></el-icon>
+          <el-icon>
+            <User />
+          </el-icon>
           您的学生画像
         </h3>
         <div class="summary-grid">
@@ -110,7 +118,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { User } from '@element-plus/icons-vue'
+import { User, TrendCharts } from '@element-plus/icons-vue'
 
 const searchKeyword = ref('')
 const selectedJob = ref<any>(null)
@@ -150,21 +158,57 @@ const resetMatch = () => {
 
 <style scoped lang="scss">
 .career-plan-page {
+
+  // 页面头部
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-  }
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
 
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-  .profile-info {
-    font-size: 0.875rem;
-    color: #606266;
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
+    }
+
+    .profile-info {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
   }
 }
 

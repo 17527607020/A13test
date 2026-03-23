@@ -151,8 +151,8 @@ const expandedGroups = ref<string[]>([])
 
 const navItems: NavItem[] = [
   { id: 'home', label: '首页', path: '/', icon: HomeFilled },
+  { id: 'ai', label: 'AI助手', path: '/ai', icon: ChatDotRound },
   { id: 'assessment', label: '职业测评', path: '/assessment', icon: EditPen },
-  { id: 'interview', label: '模拟面试', path: '/interview', icon: Microphone },
   {
     id: 'jobs',
     label: '岗位探索',
@@ -165,7 +165,7 @@ const navItems: NavItem[] = [
   { id: 'profile', label: '学生画像', path: '/student-profile', icon: User },
   { id: 'plan', label: '职业规划', path: '/plan', icon: Share },
   { id: 'reports', label: '报告中心', path: '/reports', icon: Document },
-  { id: 'ai', label: 'AI助手', path: '/ai', icon: ChatDotRound },
+  { id: 'interview', label: '模拟面试', path: '/interview', icon: Microphone },
   { id: 'settings', label: '个人中心', path: '/settings', icon: Setting }
 ]
 
@@ -292,7 +292,7 @@ const handleLogout = () => {
 
   .logo-icon {
     font-size: 1.75rem;
-    color: #409eff;
+    color: #6B5CE7;
   }
 
   .logo-text {
@@ -361,14 +361,14 @@ const handleLogout = () => {
   }
 
   &:hover {
-    background: #ecf5ff;
-    color: #409eff;
+    background: #f0ebfa;
+    color: #6B5CE7;
   }
 
   &.active {
-    background: linear-gradient(90deg, #409eff 0%, #337ecc 100%);
+    background: linear-gradient(90deg, #6B5CE7 0%, #8A7FE0 100%);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(107, 92, 231, 0.25);
 
     .nav-icon {
       color: #fff;
@@ -429,7 +429,7 @@ const handleLogout = () => {
   }
 
   .user-avatar {
-    border: 2px solid #409eff;
+    border: 2px solid #6B5CE7;
     flex-shrink: 0;
     background: #fff;
   }
@@ -451,8 +451,8 @@ const handleLogout = () => {
 
     .user-role {
       font-size: 0.75rem;
-      color: #409eff;
-      background: #ecf5ff;
+      color: #6B5CE7;
+      background: #f0ebfa;
       padding: 0.125rem 0.5rem;
       border-radius: 4px;
       width: fit-content;
@@ -509,7 +509,7 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 
   .breadcrumb-item {
     color: #606266;
@@ -520,11 +520,11 @@ const handleLogout = () => {
       align-items: center;
       gap: 0.25rem;
       text-decoration: none;
-      color: #409eff;
+      color: #6B5CE7;
       font-weight: 500;
 
       &:hover {
-        color: #337ecc;
+        color: #8A7FE0;
       }
 
       .el-icon {

@@ -2,9 +2,19 @@
   <div class="assessment-page">
     <!-- 测评选择界面 -->
     <template v-if="currentView === 'list'">
+      <!-- 页面头部 -->
       <div class="page-header">
-        <h1>职业测评</h1>
-        <p class="subtitle">科学测评，精准定位你的职业方向</p>
+        <div class="header-left">
+          <div class="header-icon">
+            <el-icon :size="28">
+              <Edit />
+            </el-icon>
+          </div>
+          <div class="header-info">
+            <h1 class="page-title">职业测评</h1>
+            <p class="page-subtitle">科学分析自我，助力求职不迷茫</p>
+          </div>
+        </div>
       </div>
 
       <!-- 测评类型 -->
@@ -578,19 +588,48 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .assessment-page {
+
+  // 页面头部
   .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
 
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #303133;
-      margin-bottom: 0.25rem;
-    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-    .subtitle {
-      color: #909399;
-      font-size: 0.9rem;
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
     }
   }
 

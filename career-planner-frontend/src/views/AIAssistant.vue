@@ -1,18 +1,24 @@
 <template>
   <div class="ai-assistant-page">
+    <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">AI职业规划助手</h1>
-      <p class="page-desc">专业的职业规划智能体，帮助你找到最适合的职业发展路径</p>
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <ChatDotRound />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">AI职业规划助手</h1>
+          <p class="page-subtitle">专业的职业规划智能体，帮助你找到最适合的职业发展路径</p>
+        </div>
+      </div>
     </div>
 
     <!-- 聊天区域 -->
     <el-card class="chat-card">
       <div class="chat-messages">
-        <div
-          v-for="(message, index) in messages"
-          :key="index"
-          :class="['message', message.role]"
-        >
+        <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
           <div class="message-content">
             {{ message.content }}
           </div>
@@ -31,12 +37,8 @@
     <div v-if="messages.length === 1" class="quick-questions">
       <p class="quick-label">常见问题：</p>
       <div class="quick-buttons">
-        <el-button
-          v-for="(question, index) in quickQuestions"
-          :key="index"
-          size="small"
-          @click="handleQuickQuestion(question)"
-        >
+        <el-button v-for="(question, index) in quickQuestions" :key="index" size="small"
+          @click="handleQuickQuestion(question)">
           {{ question }}
         </el-button>
       </div>
@@ -44,12 +46,7 @@
 
     <!-- 输入区域 -->
     <div class="input-area">
-      <el-input
-        v-model="input"
-        placeholder="输入你的问题..."
-        @keypress.enter="handleSend"
-        :disabled="isLoading"
-      />
+      <el-input v-model="input" placeholder="输入你的问题..." @keypress.enter="handleSend" :disabled="isLoading" />
       <el-button type="primary" @click="handleSend" :disabled="isLoading || !input.trim()">
         发送
       </el-button>
@@ -116,17 +113,47 @@ const handleQuickQuestion = (question: string) => {
   flex-direction: column;
   height: calc(100vh - 200px);
 
+  // 页面头部
   .page-header {
-    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
 
-    .page-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-    .page-desc {
-      color: #606266;
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
     }
   }
 }
@@ -203,11 +230,13 @@ const handleQuickQuestion = (question: string) => {
 }
 
 @keyframes bounce {
+
   0%,
   80%,
   100% {
     transform: scale(0);
   }
+
   40% {
     transform: scale(1);
   }

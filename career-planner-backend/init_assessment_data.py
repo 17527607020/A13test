@@ -1,16 +1,16 @@
 """
-初始化测评数据 - MBTI和霍兰德题目
+初始化测评数据 - 16型人格职业性格测试、心理健康测评、职场情商测评
 """
 import asyncio
 from sqlalchemy import select
 from app.core.config import AsyncSessionLocal, engine, Base
 from app.models.assessment import Assessment, AssessmentQuestion
-from app.models.user import User  # 导入User模型以建立外键关系
+from app.models.user import User
 
 
-# MBTI题目数据
-MBTI_QUESTIONS = [
-    # E/I 维度
+# 16型人格职业性格测试题目（基于MBTI）
+PERSONALITY_QUESTIONS = [
+    # E/I 维度 - 外向/内向
     {"text": "在社交聚会中，你通常会：", "dimension": "EI", "options": [
         {"text": "主动与许多人交谈，包括陌生人", "value": "A", "score": 1},
         {"text": "只与几个熟悉的人交谈", "value": "B", "score": 1}
@@ -31,7 +31,7 @@ MBTI_QUESTIONS = [
         {"text": "外向活跃、充满活力的人", "value": "A", "score": 1},
         {"text": "安静沉稳、深思熟虑的人", "value": "B", "score": 1}
     ]},
-    # S/N 维度
+    # S/N 维度 - 感觉/直觉
     {"text": "你更重视：", "dimension": "SN", "options": [
         {"text": "当前的现实情况", "value": "A", "score": 1},
         {"text": "未来的可能性", "value": "B", "score": 1}
@@ -52,7 +52,7 @@ MBTI_QUESTIONS = [
         {"text": "努力工作和实践经验", "value": "A", "score": 1},
         {"text": "创新思维和独特见解", "value": "B", "score": 1}
     ]},
-    # T/F 维度
+    # T/F 维度 - 思考/情感
     {"text": "做决定时，你更看重：", "dimension": "TF", "options": [
         {"text": "逻辑和客观分析", "value": "A", "score": 1},
         {"text": "人情和价值观", "value": "B", "score": 1}
@@ -73,7 +73,7 @@ MBTI_QUESTIONS = [
         {"text": "理性分析的能力", "value": "A", "score": 1},
         {"text": "同理心的品质", "value": "B", "score": 1}
     ]},
-    # J/P 维度
+    # J/P 维度 - 判断/知觉
     {"text": "你更喜欢的生活方式是：", "dimension": "JP", "options": [
         {"text": "有计划、有条理的", "value": "A", "score": 1},
         {"text": "灵活、随性的", "value": "B", "score": 1}
@@ -96,247 +96,259 @@ MBTI_QUESTIONS = [
     ]},
 ]
 
-# 霍兰德题目数据
-HOLLAND_QUESTIONS = [
-    {"text": "我喜欢拆卸和组装机械装置", "dimension": "R", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+# 心理健康测评题目
+MENTAL_HEALTH_QUESTIONS = [
+    # 情绪状态
+    {"text": "最近一个月，我感到心情愉快", "dimension": "emotion", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢户外活动和体育运动", "dimension": "R", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我能够控制自己的情绪波动", "dimension": "emotion", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢使用工具修理物品", "dimension": "R", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我经常感到焦虑或紧张", "dimension": "emotion", "options": [
+        {"text": "从不", "value": "A", "score": 4},
+        {"text": "偶尔", "value": "B", "score": 3},
+        {"text": "经常", "value": "C", "score": 2},
+        {"text": "总是", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢研究科学问题", "dimension": "I", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我容易因为小事而感到沮丧", "dimension": "emotion", "options": [
+        {"text": "从不", "value": "A", "score": 4},
+        {"text": "偶尔", "value": "B", "score": 3},
+        {"text": "经常", "value": "C", "score": 2},
+        {"text": "总是", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢阅读科技类书籍", "dimension": "I", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    # 压力管理
+    {"text": "面对压力时，我能够有效应对", "dimension": "stress", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢分析复杂的问题", "dimension": "I", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我有健康的减压方式", "dimension": "stress", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢绘画、音乐或写作", "dimension": "A", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "工作和生活的压力让我感到喘不过气", "dimension": "stress", "options": [
+        {"text": "从不", "value": "A", "score": 4},
+        {"text": "偶尔", "value": "B", "score": 3},
+        {"text": "经常", "value": "C", "score": 2},
+        {"text": "总是", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢参加文艺活动", "dimension": "A", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我能够平衡工作与生活", "dimension": "stress", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢创造新事物", "dimension": "A", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    # 睡眠质量
+    {"text": "我的睡眠质量很好", "dimension": "sleep", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢帮助他人解决问题", "dimension": "S", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我入睡困难或易醒", "dimension": "sleep", "options": [
+        {"text": "从不", "value": "A", "score": 4},
+        {"text": "偶尔", "value": "B", "score": 3},
+        {"text": "经常", "value": "C", "score": 2},
+        {"text": "总是", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢从事教育工作", "dimension": "S", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我早上醒来感到精力充沛", "dimension": "sleep", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我关心社会公益问题", "dimension": "S", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    # 社交关系
+    {"text": "我有可以倾诉心事的亲友", "dimension": "social", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢领导团队完成目标", "dimension": "E", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我享受与人交往的过程", "dimension": "social", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢销售和谈判", "dimension": "E", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我感到孤独或被孤立", "dimension": "social", "options": [
+        {"text": "从不", "value": "A", "score": 4},
+        {"text": "偶尔", "value": "B", "score": 3},
+        {"text": "经常", "value": "C", "score": 2},
+        {"text": "总是", "value": "D", "score": 1}
     ]},
-    {"text": "我有创业的想法", "dimension": "E", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    # 自我认知
+    {"text": "我对自己的未来充满信心", "dimension": "self", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢有条理、有规律的工作", "dimension": "C", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我能够接纳自己的缺点", "dimension": "self", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我喜欢处理数据和文档", "dimension": "C", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+    {"text": "我觉得自己有价值", "dimension": "self", "options": [
+        {"text": "完全符合", "value": "A", "score": 4},
+        {"text": "比较符合", "value": "B", "score": 3},
+        {"text": "不太符合", "value": "C", "score": 2},
+        {"text": "完全不符合", "value": "D", "score": 1}
     ]},
-    {"text": "我注重细节和准确性", "dimension": "C", "options": [
-        {"text": "非常符合", "value": "A", "score": 2},
-        {"text": "比较符合", "value": "B", "score": 1},
-        {"text": "不太符合", "value": "C", "score": 0}
+]
+
+# 职场情商测评题目
+EQ_QUESTIONS = [
+    # 自我意识
+    {"text": "我能够清楚地识别自己当下的情绪", "dimension": "self_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我了解自己的优势和不足", "dimension": "self_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我知道什么事情会触发我的负面情绪", "dimension": "self_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    # 自我管理
+    {"text": "当我生气时，能够控制不做出过激行为", "dimension": "self_management", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "面对挫折时，我能够快速调整心态", "dimension": "self_management", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够为自己的错误承担责任", "dimension": "self_management", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够在压力下保持冷静", "dimension": "self_management", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    # 社会意识
+    {"text": "我能够察觉他人的情绪变化", "dimension": "social_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够理解他人话中的言外之意", "dimension": "social_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够站在他人的角度思考问题", "dimension": "social_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够感知团队的整体氛围", "dimension": "social_awareness", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    # 关系管理
+    {"text": "我能够有效地解决与他人的冲突", "dimension": "relationship", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够激励和影响他人", "dimension": "relationship", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够给予他人建设性的反馈", "dimension": "relationship", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够与不同性格的人建立良好关系", "dimension": "relationship", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
+    ]},
+    {"text": "我能够在团队中有效协作", "dimension": "relationship", "options": [
+        {"text": "总是如此", "value": "A", "score": 4},
+        {"text": "经常如此", "value": "B", "score": 3},
+        {"text": "有时如此", "value": "C", "score": 2},
+        {"text": "很少如此", "value": "D", "score": 1}
     ]},
 ]
 
 
-# 职业技能测评题目数据
-SKILL_QUESTIONS = [
-    # 沟通能力
-    {"text": "我能够清晰、准确地表达自己的想法和观点", "dimension": "communication", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够认真倾听他人的意见并给予反馈", "dimension": "communication", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够根据不同对象调整沟通方式", "dimension": "communication", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    # 团队协作
-    {"text": "我能够与不同性格的人合作共事", "dimension": "teamwork", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "在团队中，我愿意承担自己的责任", "dimension": "teamwork", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够在团队冲突中寻求共识", "dimension": "teamwork", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    # 问题解决
-    {"text": "面对复杂问题时，我能够系统分析", "dimension": "problem_solving", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够提出创新的解决方案", "dimension": "problem_solving", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够在压力下保持冷静并做出决策", "dimension": "problem_solving", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    # 学习能力
-    {"text": "我能够快速学习新知识和技能", "dimension": "learning", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我会主动寻找学习机会提升自己", "dimension": "learning", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够将学到的知识应用到实践中", "dimension": "learning", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    # 时间管理
-    {"text": "我能够合理安排时间，按时完成任务", "dimension": "time_management", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够区分任务的优先级", "dimension": "time_management", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够避免拖延，保持高效工作", "dimension": "time_management", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    # 适应能力
-    {"text": "我能够适应新的工作环境和变化", "dimension": "adaptability", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "面对挫折时，我能够快速调整心态", "dimension": "adaptability", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-    {"text": "我能够接受批评并从中学习", "dimension": "adaptability", "options": [
-        {"text": "总是如此", "value": "A", "score": 4},
-        {"text": "经常如此", "value": "B", "score": 3},
-        {"text": "有时如此", "value": "C", "score": 2},
-        {"text": "很少如此", "value": "D", "score": 1}
-    ]},
-]
+async def clear_existing_data(db):
+    """清除现有的测评数据"""
+    from sqlalchemy import delete
+    from app.models.assessment import AssessmentReport
+    # 先删除报告数据（因为有外键约束）
+    await db.execute(delete(AssessmentReport))
+    # 再删除题目数据
+    await db.execute(delete(AssessmentQuestion))
+    # 最后删除测评类型
+    await db.execute(delete(Assessment))
+    await db.commit()
+    print("已清除现有测评数据")
 
 
 async def init_assessments():
     """初始化测评数据"""
     async with AsyncSessionLocal() as db:
-        # 检查是否已有数据
-        result = await db.execute(select(Assessment))
-        existing = result.scalars().first()
-        if existing:
-            print("测评数据已存在，跳过初始化")
-            return
+        # 清除现有数据
+        await clear_existing_data(db)
 
-        # 创建MBTI测评
-        mbti = Assessment(
-            code="mbti",
-            name="MBTI职业性格测评",
-            description="了解你的性格类型，找到适合的职业方向。MBTI将人的性格分为16种类型，帮助你更好地认识自己。",
+        # 创建16型人格职业性格测试
+        personality = Assessment(
+            code="personality",
+            name="16型人格职业性格测试",
+            description="基于MBTI理论，了解你的性格类型，发现适合的职业方向。测试将分析你在四个维度的偏好，帮助你更好地认识自己。",
             icon="User",
             color="#6B5CE7",
             duration=15,
-            question_count=len(MBTI_QUESTIONS)
+            question_count=len(PERSONALITY_QUESTIONS)
         )
-        db.add(mbti)
+        db.add(personality)
         await db.flush()
 
-        # 添加MBTI题目
-        for i, q in enumerate(MBTI_QUESTIONS):
+        # 添加16型人格题目
+        for i, q in enumerate(PERSONALITY_QUESTIONS):
             question = AssessmentQuestion(
-                assessment_id=mbti.id,
+                assessment_id=personality.id,
                 question_text=q["text"],
                 question_order=i + 1,
                 dimension=q["dimension"],
@@ -344,23 +356,23 @@ async def init_assessments():
             )
             db.add(question)
 
-        # 创建霍兰德测评
-        holland = Assessment(
-            code="holland",
-            name="霍兰德职业兴趣测评",
-            description="基于兴趣倾向，推荐适合的职业领域。霍兰德理论将职业兴趣分为六种类型，帮助你找到最适合的职业方向。",
+        # 创建心理健康测评
+        mental_health = Assessment(
+            code="mental_health",
+            name="心理健康测评",
+            description="全面评估你的心理健康状况，包括情绪状态、压力管理、睡眠质量、社交关系和自我认知等维度。",
             icon="TrendCharts",
-            color="#E95CBF",
-            duration=10,
-            question_count=len(HOLLAND_QUESTIONS)
+            color="#10B981",
+            duration=12,
+            question_count=len(MENTAL_HEALTH_QUESTIONS)
         )
-        db.add(holland)
+        db.add(mental_health)
         await db.flush()
 
-        # 添加霍兰德题目
-        for i, q in enumerate(HOLLAND_QUESTIONS):
+        # 添加心理健康题目
+        for i, q in enumerate(MENTAL_HEALTH_QUESTIONS):
             question = AssessmentQuestion(
-                assessment_id=holland.id,
+                assessment_id=mental_health.id,
                 question_text=q["text"],
                 question_order=i + 1,
                 dimension=q["dimension"],
@@ -368,23 +380,23 @@ async def init_assessments():
             )
             db.add(question)
 
-        # 创建职业技能测评
-        skill = Assessment(
-            code="skill",
-            name="职业技能测评",
-            description="评估你的核心职业技能水平，包括沟通能力、团队协作、问题解决、学习能力等关键职场技能。",
+        # 创建职场情商测评
+        eq = Assessment(
+            code="eq",
+            name="职场情商测评",
+            description="评估你的职场情商水平，包括自我意识、自我管理、社会意识和关系管理四个核心维度，助你提升职场软实力。",
             icon="Collection",
-            color="#54A0FF",
-            duration=20,
-            question_count=len(SKILL_QUESTIONS)
+            color="#F59E0B",
+            duration=10,
+            question_count=len(EQ_QUESTIONS)
         )
-        db.add(skill)
+        db.add(eq)
         await db.flush()
 
-        # 添加职业技能题目
-        for i, q in enumerate(SKILL_QUESTIONS):
+        # 添加职场情商题目
+        for i, q in enumerate(EQ_QUESTIONS):
             question = AssessmentQuestion(
-                assessment_id=skill.id,
+                assessment_id=eq.id,
                 question_text=q["text"],
                 question_order=i + 1,
                 dimension=q["dimension"],
@@ -394,9 +406,9 @@ async def init_assessments():
 
         await db.commit()
         print("测评数据初始化完成！")
-        print(f"- MBTI测评：{len(MBTI_QUESTIONS)}题")
-        print(f"- 霍兰德测评：{len(HOLLAND_QUESTIONS)}题")
-        print(f"- 职业技能测评：{len(SKILL_QUESTIONS)}题")
+        print(f"- 16型人格职业性格测试：{len(PERSONALITY_QUESTIONS)}题")
+        print(f"- 心理健康测评：{len(MENTAL_HEALTH_QUESTIONS)}题")
+        print(f"- 职场情商测评：{len(EQ_QUESTIONS)}题")
 
 
 async def create_tables():

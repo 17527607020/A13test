@@ -1,31 +1,30 @@
 <template>
   <div class="job-explore-page">
-    <h1 class="page-title">岗位探索</h1>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <Search />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">岗位探索</h1>
+          <p class="page-subtitle">发现适合你的职业方向，开启精彩职业生涯</p>
+        </div>
+      </div>
+    </div>
 
     <!-- 搜索和筛选 -->
     <el-card class="filter-card">
       <div class="filter-row">
-        <el-input
-          v-model="keyword"
-          placeholder="搜索岗位名称..."
-          class="search-input"
-        />
+        <el-input v-model="keyword" placeholder="搜索岗位名称..." class="search-input" />
         <div class="filter-selects">
           <el-select v-model="selectedIndustry" placeholder="全行业" clearable>
-            <el-option
-              v-for="ind in industries"
-              :key="ind"
-              :label="ind"
-              :value="ind"
-            />
+            <el-option v-for="ind in industries" :key="ind" :label="ind" :value="ind" />
           </el-select>
           <el-select v-model="selectedType" placeholder="全类型" clearable>
-            <el-option
-              v-for="type in jobTypes"
-              :key="type"
-              :label="type"
-              :value="type"
-            />
+            <el-option v-for="type in jobTypes" :key="type" :label="type" :value="type" />
           </el-select>
         </div>
       </div>
@@ -69,6 +68,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Search } from '@element-plus/icons-vue'
 
 const keyword = ref('')
 const selectedIndustry = ref('')
@@ -113,10 +113,49 @@ const jobs = ref([
 
 <style scoped lang="scss">
 .job-explore-page {
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+
+  // 页面头部
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
+    }
   }
 }
 

@@ -1,9 +1,18 @@
 <template>
   <div class="interview-page">
-    <!-- 页面标题 -->
+    <!-- 页面头部 -->
     <div class="page-header">
-      <h1>模拟面试</h1>
-      <p class="subtitle">AI智能面试官，助你从容应对真实面试</p>
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <VideoCamera />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">模拟面试</h1>
+          <p class="page-subtitle">AI智能面试官，助你从容应对真实面试</p>
+        </div>
+      </div>
     </div>
 
     <!-- 面试模式选择 -->
@@ -357,19 +366,48 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .interview-page {
+
+  // 页面头部
   .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
 
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #303133;
-      margin-bottom: 0.25rem;
-    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-    .subtitle {
-      color: #909399;
-      font-size: 0.9rem;
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
     }
   }
 

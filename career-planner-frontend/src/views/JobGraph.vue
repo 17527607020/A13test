@@ -1,6 +1,19 @@
 <template>
   <div class="job-graph-page">
-    <h1 class="page-title">岗位图谱</h1>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <Connection />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">岗位图谱</h1>
+          <p class="page-subtitle">探索职业发展路径，了解岗位晋升与换岗方向</p>
+        </div>
+      </div>
+    </div>
 
     <el-card class="control-card">
       <div class="control-row">
@@ -50,7 +63,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from 'echarts'
-import { RefreshRight } from '@element-plus/icons-vue'
+import { RefreshRight, Connection } from '@element-plus/icons-vue'
 import { jobGraphApi, type JobInfo, type JobNode, type JobLink } from '@/api/jobGraph'
 
 const chartRef = ref<HTMLElement>()
@@ -465,15 +478,55 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .job-graph-page {
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+
+  // 页面头部
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
+    }
   }
 }
 
 .control-card {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 16px;
 }
 
 .control-row {
@@ -495,6 +548,7 @@ onUnmounted(() => {
 
 .graph-card {
   min-height: 600px;
+  border-radius: 16px;
 }
 
 .chart-container {

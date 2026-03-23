@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 
 
@@ -25,16 +25,14 @@ class UserProfileUpdate(BaseModel):
 
 class UserProfileResponse(BaseModel):
     """用户资料响应"""
-    id: int
-    user_id: int
-    nickname: Optional[str] = None
-    phone: Optional[str] = None
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    location: Optional[str] = None
-    website: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    success: bool = True
+    data: Optional[dict[str, Any]] = None
+    message: Optional[str] = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat() if v else None
+        }
 
 
 class PasswordChange(BaseModel):

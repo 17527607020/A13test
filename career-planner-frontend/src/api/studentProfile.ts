@@ -3,10 +3,11 @@ import request from '@/utils/request'
 export interface BasicInfo {
   name: string
   gender?: string
-  age?: string
+  age?: number
   phone?: string
   email: string
   location?: string
+  locationArr?: string[]
 }
 
 export interface EducationItem {

@@ -1,30 +1,29 @@
 <template>
   <div class="job-list-page">
-    <h1 class="page-title">岗位列表</h1>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <el-icon :size="28">
+            <Briefcase />
+          </el-icon>
+        </div>
+        <div class="header-info">
+          <h1 class="page-title">岗位列表</h1>
+          <p class="page-subtitle">探索各类职业岗位，找到适合你的工作机会</p>
+        </div>
+      </div>
+    </div>
 
     <el-card class="filter-card">
       <div class="filter-row">
-        <el-input
-          v-model="keyword"
-          placeholder="搜索岗位名称..."
-          class="search-input"
-        />
+        <el-input v-model="keyword" placeholder="搜索岗位名称..." class="search-input" />
         <div class="filter-selects">
           <el-select v-model="selectedIndustry" placeholder="全行业" clearable>
-            <el-option
-              v-for="ind in industries"
-              :key="ind"
-              :label="ind"
-              :value="ind"
-            />
+            <el-option v-for="ind in industries" :key="ind" :label="ind" :value="ind" />
           </el-select>
           <el-select v-model="selectedType" placeholder="全类型" clearable>
-            <el-option
-              v-for="type in jobTypes"
-              :key="type"
-              :label="type"
-              :value="type"
-            />
+            <el-option v-for="type in jobTypes" :key="type" :label="type" :value="type" />
           </el-select>
         </div>
       </div>
@@ -66,6 +65,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Briefcase } from '@element-plus/icons-vue'
 
 const keyword = ref('')
 const selectedIndustry = ref('')
@@ -110,15 +110,55 @@ const jobs = ref([
 
 <style scoped lang="scss">
 .job-list-page {
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+
+  // 页面头部
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(107, 92, 231, 0.25);
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .header-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .header-info {
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .page-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 0;
+        }
+      }
+    }
   }
 }
 
 .filter-card {
   margin-bottom: 1.5rem;
+  border-radius: 16px;
 }
 
 .filter-row {
@@ -152,6 +192,14 @@ const jobs = ref([
 }
 
 .job-card {
+  border-radius: 12px;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
   .job-title {
     font-size: 1.125rem;
     font-weight: 600;
@@ -178,6 +226,8 @@ const jobs = ref([
 }
 
 .empty-card {
+  border-radius: 16px;
+
   .empty-content {
     text-align: center;
     padding: 2rem 0;

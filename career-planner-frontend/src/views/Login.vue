@@ -18,7 +18,9 @@
         <div class="features">
           <div class="feature-item">
             <div class="feature-icon">
-              <el-icon><TrendCharts /></el-icon>
+              <el-icon>
+                <TrendCharts />
+              </el-icon>
             </div>
             <div class="feature-content">
               <p class="feature-title">AI职业测评</p>
@@ -28,7 +30,9 @@
 
           <div class="feature-item">
             <div class="feature-icon">
-              <el-icon><Opportunity /></el-icon>
+              <el-icon>
+                <Opportunity />
+              </el-icon>
             </div>
             <div class="feature-content">
               <p class="feature-title">智能规划方案</p>
@@ -38,7 +42,9 @@
 
           <div class="feature-item">
             <div class="feature-icon">
-              <el-icon><ChatDotRound /></el-icon>
+              <el-icon>
+                <ChatDotRound />
+              </el-icon>
             </div>
             <div class="feature-content">
               <p class="feature-title">导师在线咨询</p>
@@ -58,60 +64,27 @@
             </p>
           </div>
 
-          <el-alert
-            v-if="error"
-            :title="error"
-            type="error"
-            :closable="false"
-            show-icon
-            class="error-alert"
-          />
+          <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="error-alert" />
 
           <el-form @submit.prevent="handleSubmit" class="login-form">
             <el-form-item>
-              <el-input
-                v-model="formData.username"
-                placeholder="用户名"
-                size="large"
-              />
+              <el-input v-model="formData.username" placeholder="用户名" size="large" />
             </el-form-item>
 
             <el-form-item v-if="!isLogin">
-              <el-input
-                v-model="formData.email"
-                type="email"
-                placeholder="邮箱"
-                size="large"
-              />
+              <el-input v-model="formData.email" type="email" placeholder="邮箱" size="large" />
             </el-form-item>
 
             <el-form-item>
-              <el-input
-                v-model="formData.password"
-                type="password"
-                placeholder="密码"
-                size="large"
-                show-password
-              />
+              <el-input v-model="formData.password" type="password" placeholder="密码" size="large" show-password />
             </el-form-item>
 
             <el-form-item v-if="!isLogin">
-              <el-input
-                v-model="formData.confirmPassword"
-                type="password"
-                placeholder="确认密码"
-                size="large"
-                show-password
-              />
+              <el-input v-model="formData.confirmPassword" type="password" placeholder="确认密码" size="large"
+                show-password />
             </el-form-item>
 
-            <el-button
-              type="primary"
-              native-type="submit"
-              size="large"
-              class="submit-btn"
-              :loading="loading"
-            >
+            <el-button type="primary" native-type="submit" size="large" class="submit-btn" :loading="loading">
               {{ loading ? '处理中...' : isLogin ? '登录' : '注册' }}
             </el-button>
           </el-form>
@@ -120,12 +93,8 @@
           <div v-if="!isLogin" class="role-select">
             <p class="role-label">选择角色</p>
             <div class="role-options">
-              <div
-                v-for="role in roles"
-                :key="role.value"
-                :class="['role-option', { active: selectedRole === role.value }]"
-                @click="selectedRole = role.value"
-              >
+              <div v-for="role in roles" :key="role.value"
+                :class="['role-option', { active: selectedRole === role.value }]" @click="selectedRole = role.value">
                 <el-icon :size="20">
                   <component :is="role.icon" />
                 </el-icon>
@@ -238,7 +207,7 @@ const handleSubmit = async () => {
 
 .intro-section {
   flex: 1;
-  background: linear-gradient(135deg, #ecf5ff 0%, #eef2ff 100%);
+  background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
   padding: 2rem;
 
   @media (min-width: 768px) {
@@ -249,13 +218,13 @@ const handleSubmit = async () => {
 .intro-title {
   font-size: 1.75rem;
   font-weight: bold;
-  color: #303133;
+  color: #fff;
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }
 
 .intro-desc {
-  color: #606266;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.875rem;
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -276,7 +245,7 @@ const handleSubmit = async () => {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #409eff;
+  background: rgba(255, 255, 255, 0.3);
   color: white;
   display: flex;
   align-items: center;
@@ -288,13 +257,13 @@ const handleSubmit = async () => {
 .feature-content {
   .feature-title {
     font-weight: 500;
-    color: #303133;
+    color: #fff;
     margin-bottom: 0.125rem;
   }
 
   .feature-desc {
     font-size: 0.75rem;
-    color: #606266;
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -345,6 +314,12 @@ const handleSubmit = async () => {
 
   .submit-btn {
     width: 100%;
+    background: linear-gradient(135deg, #6B5CE7 0%, #8A7FE0 100%);
+    border: none;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(107, 92, 231, 0.35);
+    }
   }
 }
 
@@ -381,9 +356,9 @@ const handleSubmit = async () => {
     }
 
     &.active {
-      background: #ecf5ff;
-      color: #409eff;
-      border: 2px solid #409eff;
+      background: linear-gradient(135deg, #f8f7ff 0%, #f0ebfa 100%);
+      color: #6B5CE7;
+      border: 2px solid #6B5CE7;
     }
 
     span {

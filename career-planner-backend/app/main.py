@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 from app.api.v1 import user, student, job_graph, assessment, interview, home
 from app.api.v1 import user_center as user_center_router
 from app.core.config import settings
@@ -28,6 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 配置静态文件服务 - 用于访问上传的头像
+upload_dir = "uploads"
+if not os.path.exists(upload_dir):
+    os.makedirs(upload_dir)
+    os.makedirs(os.path.join(upload_dir, "avatars"))
+app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+
 # 注册路由
 app.include_router(user.router, prefix=settings.API_V1_STR, tags=["user"])
 app.include_router(
@@ -35,7 +44,7 @@ app.include_router(
 app.include_router(
     job_graph.router, prefix=settings.API_V1_STR, tags=["job_graph"])
 app.include_router(user_center_router.router,
-                   prefix=settings.API_V1_STR, tags=["user_center"])
+                   prefix=f"{settings.API_V1_STR}/user-center", tags=["user_center"])
 app.include_router(assessment.router,
                    prefix=settings.API_V1_STR, tags=["assessment"])
 app.include_router(interview.router,
